@@ -1,18 +1,19 @@
 import React from "react";
 import Iconsvg from "/default.png";
+import { Link } from "react-router-dom";
 
 function Nav() {
     return (
         <header className="text-gray-600 body-font max-h-24">
             <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-                <a className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0" href="/">
+                <Link to={"/"} className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0" href="/">
                     <img className="w-40" src={Iconsvg} />
-                </a>
+                </Link>
                 <nav className="md:ml-auto flex flex-wrap items-center text-base justify-center">
-                    <a className="mr-5 cursor-pointer font-bold hover:text-[--primary-color]">Servicios</a>
-                    <a className="mr-5 cursor-pointer font-bold hover:text-[--primary-color]">Portafolio</a>
-                    <a className="mr-5 cursor-pointer font-bold hover:text-[--primary-color]">Nosotros</a>
-                    <a className="mr-5 cursor-pointer font-bold hover:text-[--primary-color]">Contactos</a>
+                    <Link to={"/Servicios"} className="mr-5 cursor-pointer font-bold hover:text-[--primary-color]">Servicios</Link>
+                    <Link to={"/Portafolio"} className="mr-5 cursor-pointer font-bold hover:text-[--primary-color]">Portafolio</Link>
+                    <Link to={"/Nosotros"} className="mr-5 cursor-pointer font-bold hover:text-[--primary-color]">Nosotros</Link>
+                    <Link to={"/Contactos"} className="mr-5 cursor-pointer font-bold hover:text-[--primary-color]">Contactos</Link>
                 </nav>
                 <button className="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">
                     Button

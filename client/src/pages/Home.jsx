@@ -5,10 +5,12 @@ import Proyects from "../components/Homepage/Proyects";
 import MVV from "../components/Homepage/MVV";
 import Contact from "../components/Homepage/Contact";
 import Footer from "../components/Homepage/Footer";
+import Nav from "../components/Nav";
 
 function Home() {
     return (
         <div>
+            <Nav />
             <Hero />
             <Services />
             <Proyects />
