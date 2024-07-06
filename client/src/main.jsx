@@ -8,18 +8,26 @@ import Us from "./pages/Us";
 import Contacts from "./pages/Contacts";
 import Portfolio from "./pages/Portfolio";
 import ProyectDetail from "./components/PortfolioPage/ProyectDetail";
+/* --- */
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import ManageProyects from "./pages/admin/ManageProyects";
+import ManageTeam from "./pages/admin/ManageTeam";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
         <Routes>
             <Route path="/" element={<Home />}></Route>
             <Route path="/Servicios" element={<Services />} />
-
             <Route path="/Portafolio" element={<Portfolio />} />
             <Route path="/Portafolio/:id" element={<ProyectDetail />} />
-
             <Route path="/Nosotros" element={<Us />} />
             <Route path="/Contactos" element={<Contacts />} />
+            {/* --------ADMIN------- */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route path="/admin/Dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/Manage/Proyectos" element={<ManageProyects />} />
+            <Route path="/admin/Manage/Equipo"  element={<ManageTeam />} />
             <Route path="*" element={<h1>PAGE NOT FOUND</h1>} />
         </Routes>
     </BrowserRouter>
