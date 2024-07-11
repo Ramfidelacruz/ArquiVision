@@ -13,6 +13,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import ManageProyects from "./pages/admin/ManageProyects";
 import ManageTeam from "./pages/admin/ManageTeam";
+import AddProyect from "./pages/admin/AddProyect";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <BrowserRouter>
@@ -28,6 +29,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="/admin/Dashboard" element={<AdminDashboard />} />
             <Route path="/admin/Manage/Proyectos" element={<ManageProyects />} />
             <Route path="/admin/Manage/Equipo"  element={<ManageTeam />} />
+            <Route path="/admin/manage/proyectos/new"  element={<AddProyect />} />
             <Route path="*" element={<h1>PAGE NOT FOUND</h1>} />
         </Routes>
     </BrowserRouter>

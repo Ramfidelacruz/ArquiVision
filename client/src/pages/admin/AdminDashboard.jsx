@@ -12,7 +12,7 @@ function AdminDashboard() {
             <div className="flex gap-3 md:p-8">
                 <div className=" border-gray-200 border p-4 rounded-lg w-4/12 min-h-14 bg-gray-200">
                     <div className="flex-grow">
-                        <h2 className="text-gray-900 title-font text-3xl font-medium mb-2">
+                        <h2 className="text-[--primary-color] title-font text-4xl font-medium mb-2">
                             Dashboard
                         </h2>
                         <p className="text-gray-500">
@@ -31,22 +31,22 @@ function AdminDashboard() {
                                 34
                             </h2>
                             <svg
-                                fill="#000000"
+                                fill=""
                                 width="30px"
                                 height="30px"
                                 viewBox="-2.4 -2.4 28.80 28.80"
                                 xmlns="http://www.w3.org/2000/svg"
                                 stroke="#000000"
-                                stroke-width="0.00024000000000000003"
-                                className="mb-2"
+                                strokeWidth="0.00024000000000000003"
+                                className="mb-2 fill-[--primary-color]"
                             >
-                                <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
                                 <g
                                     id="SVGRepo_tracerCarrier"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
                                     stroke="#CCCCCC"
-                                    stroke-width="0.144"
+                                    strokeWidth="0.144"
                                 ></g>
                                 <g id="SVGRepo_iconCarrier">
                                     <path d="M22.372,5.071l-10-4A1,1,0,0,0,11,2V6H2A1,1,0,0,0,1,7V22a1,1,0,0,0,1,1H22a1,1,0,0,0,1-1V6A1,1,0,0,0,22.372,5.071ZM3,8h8V21H3ZM13,21V3.477l8,3.2V8H15v2h6v2H15v2h6v2H15v2h6v3ZM7,12h3v2H7ZM4,12H6v2H4ZM7,9h3v2H7ZM4,9H6v2H4Zm3,6h3v2H7ZM4,15H6v2H4Zm3,3h3v2H7ZM4,18H6v2H4Z"></path>

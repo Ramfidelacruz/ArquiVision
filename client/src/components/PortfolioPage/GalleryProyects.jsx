@@ -1,7 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ProyectItem from "./ProyectItem";
 
 function GalleryProyects() {
+    const [projects, setProjects] = useState([]);
+    useEffect(() => {
+        fetch("http://localhost:8080/projects", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                console.log("peticion, todas las listas de proyectos"); // Aquí tendrás la lista de proyectos
+                setProjects(data);
+            })
+            .catch((error) => {
+                console.error("Error fetching projects:", error);
+            });
+    }, []);
     return (
         <section className="text-gray-600 body-font">
             <div className="container px-5 py-24 mx-auto">
@@ -17,12 +34,14 @@ function GalleryProyects() {
                     </p>
                 </div>
                 <div className="flex flex-wrap -m-4">
-                    <ProyectItem id="1"/>
-                    <ProyectItem id="2"/>
-                    <ProyectItem id="3"/>
-                    <ProyectItem id="4"/>
-                    <ProyectItem id="5"/>
-                    <ProyectItem id="6"/>
+                    {projects.map((project) => {
+                        console.log("este es un proyecto: ");
+                        console.log(project.id);
+                        return (
+                            <ProyectItem key={project.id} project={project} />
+                        );
+                    })}
+                    
                 </div>
             </div>
         </section>
