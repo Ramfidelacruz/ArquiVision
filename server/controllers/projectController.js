@@ -1,4 +1,7 @@
 const { createNewProject, fetchAllProjects, fetchProjectById, removeProject } = require('../services/projectService.js');
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const getProjects = async (req, res) => {
     try {
@@ -10,6 +13,7 @@ const getProjects = async (req, res) => {
     }
 };
 
+
 const getProjectById = async (req, res) => {
     try {
         const project = await fetchProjectById(req.params.id);
@@ -20,17 +24,37 @@ const getProjectById = async (req, res) => {
 };
 
 const createProject = async (req, res) => {
-    console.log("peticion para crear un proyecto nuevo")
-    console.log("data: ", req.body);
+    console.log("Iniciando creación de proyecto");
+    console.log("Body recibido:", req.body);
+    console.log("Archivos recibidos:", req.files);
     
     try {
         const { name, description, location, size, intention, client } = req.body;
+        const images = req.files;
+
+        if (!images || images.length === 0) {
+            console.log("No se recibieron imágenes");
+        }
+
+        const result = await createNewProject(
+            name, 
+            description, 
+            location, 
+            size, 
+            intention, 
+            client, 
+            images
+        );
         
-        await createNewProject(name, description, location, size, intention, client);
-        res.status(201).json({ message: 'Project created successfully' });
+        console.log("Proyecto creado exitosamente:", result);
+        res.status(201).json({ message: 'Project created successfully', data: result });
     } catch (error) {
-        console.error('Error in createProject:', error.message);
-        res.status(500).json({ error: error.message });
+        console.error('Error detallado en createProject:', error);
+        res.status(500).json({ 
+            error: error.message,
+            stack: error.stack,
+            details: error.details || 'No additional details'
+        });
     }
 };
 
@@ -46,6 +70,6 @@ const deleteProject = async (req, res) => {
 module.exports = {
     getProjects,
     getProjectById,
-    createProject,
+    createProject: [upload.array('images', 10), createProject],
     deleteProject
 };

@@ -8,40 +8,54 @@ function AddProject() {
     const [size, setSize] = useState("");
     const [intention, setIntention] = useState("");
     const [client, setClient] = useState("");
+    const [images, setImages] = useState([]);
+    const [previewUrls, setPreviewUrls] = useState([]);
     const navigate = useNavigate();
+
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+        setImages(files);
+        
+        // Crear previsualizaciones
+        const urls = files.map(file => URL.createObjectURL(file));
+        setPreviewUrls(urls);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const formData = {
-            name: name,
-            description: description,
-            location: location,
-            size: size,
-            intention: intention,
-            client: client,
-        };
-
-        console.log(
-            "estos son los datos del fromdata desde el frontend: ",
-            JSON.stringify(formData)
-        );
+        const formData = new FormData();
+        
+        // Agregar datos del proyecto
+        formData.append('name', name);
+        formData.append('description', description);
+        formData.append('location', location);
+        formData.append('size', size);
+        formData.append('intention', intention);
+        formData.append('client', client);
+        
+        // Agregar imágenes
+        images.forEach((image, index) => {
+            formData.append('images', image);
+        });
 
         try {
             const response = await fetch("http://localhost:8080/projects", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(formData),
+                body: formData,
             });
 
+            const data = await response.json();
+
             if (!response.ok) {
-                throw new Error("Error creating project");
+                throw new Error(data.error || "Error creating project");
             }
 
+            console.log("Proyecto creado exitosamente:", data);
             navigate("/admin/manage/proyectos");
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Error detallado:", error);
+            // Aquí podrías mostrar un mensaje de error al usuario
+            alert(`Error: ${error.message}`);
         }
     };
 
@@ -117,6 +131,30 @@ function AddProject() {
                         className="p-2 border rounded w-full"
                         required
                     />
+                </div>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium">
+                        Imágenes del Proyecto
+                    </label>
+                    <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="p-2 border rounded w-full"
+                    />
+                    
+                    {/* Previsualización de imágenes */}
+                    <div className="mt-2 flex gap-2 flex-wrap">
+                        {previewUrls.map((url, index) => (
+                            <img
+                                key={index}
+                                src={url}
+                                alt={`Preview ${index + 1}`}
+                                className="w-24 h-24 object-cover rounded"
+                            />
+                        ))}
+                    </div>
                 </div>
                 <div className="flex justify-between">
                     <Link to={"/admin/Manage/Proyectos"} className="bg-red-500 px-4 py-2 rounded text-white">

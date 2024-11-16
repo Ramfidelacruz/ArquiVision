@@ -1,8 +1,28 @@
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const options = {
+    auth: {
+        persistSession: false
+    }
+};
 
-module.exports = { supabase };
+try {
+    const supabase = createClient(
+        process.env.SUPABASE_URL,
+        process.env.SUPABASE_KEY,
+        options
+    );
+    
+    console.log('Cliente Supabase creado exitosamente');
+    
+    // Prueba simple de conexión
+    supabase.from('test').select('*').limit(1)
+        .then(() => console.log('Conexión a Supabase verificada'))
+        .catch(err => console.error('Error al verificar conexión:', err));
+
+    module.exports = supabase;
+} catch (error) {
+    console.error('Error al crear cliente Supabase:', error);
+    throw error;
+}
