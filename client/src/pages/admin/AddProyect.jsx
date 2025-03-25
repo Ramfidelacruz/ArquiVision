@@ -12,12 +12,35 @@ function AddProject() {
     const [previewUrls, setPreviewUrls] = useState([]);
     const navigate = useNavigate();
 
+    const intentionOptions = [
+        { value: 'comercial', label: 'Comercial' },
+        { value: 'residencial', label: 'Residencial' },
+        { value: 'industrial', label: 'Industrial' },
+        { value: 'otro', label: 'Otro' }
+    ];
+
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
-        setImages(files);
+        
+        // Validar tamaño y tipo de archivos
+        const validFiles = files.filter(file => {
+            const isValidType = ['image/jpeg', 'image/png', 'image/jpg'].includes(file.type);
+            const isValidSize = file.size <= 5 * 1024 * 1024; // 5MB
+            
+            if (!isValidType) {
+                alert(`El archivo ${file.name} no es una imagen válida`);
+            }
+            if (!isValidSize) {
+                alert(`El archivo ${file.name} excede el tamaño máximo de 5MB`);
+            }
+            
+            return isValidType && isValidSize;
+        });
+
+        setImages(validFiles);
         
         // Crear previsualizaciones
-        const urls = files.map(file => URL.createObjectURL(file));
+        const urls = validFiles.map(file => URL.createObjectURL(file));
         setPreviewUrls(urls);
     };
 
@@ -34,7 +57,7 @@ function AddProject() {
         formData.append('client', client);
         
         // Agregar imágenes
-        images.forEach((image, index) => {
+        images.forEach((image) => {
             formData.append('images', image);
         });
 
@@ -47,14 +70,13 @@ function AddProject() {
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || "Error creating project");
+                throw new Error(data.error || "Error creando el proyecto");
             }
 
             console.log("Proyecto creado exitosamente:", data);
             navigate("/admin/manage/proyectos");
         } catch (error) {
             console.error("Error detallado:", error);
-            // Aquí podrías mostrar un mensaje de error al usuario
             alert(`Error: ${error.message}`);
         }
     };
@@ -114,13 +136,19 @@ function AddProject() {
                     <label className="block text-sm font-medium">
                         Intención
                     </label>
-                    <input
-                        type="text"
+                    <select 
                         value={intention}
                         onChange={(e) => setIntention(e.target.value)}
-                        className="p-2 border rounded w-full"
+                        className="w-full rounded border border-gray-300 p-2"
                         required
-                    />
+                    >
+                        <option value="">Seleccione una intención</option>
+                        {intentionOptions.map(option => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
                 <div>
                     <label className="block text-sm font-medium">Cliente</label>

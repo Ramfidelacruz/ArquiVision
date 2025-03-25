@@ -1,67 +1,48 @@
-const supabase = require("../supabaseClient.js");
+const { createClient } = require('@supabase/supabase-js');
+const supabase = require('../supabaseClient');
 const { v4: uuidv4 } = require('uuid');
 
 const uploadImage = async (file) => {
     try {
-        console.log("Iniciando carga de imagen:", file.originalname);
-        
-        // Verificar que el archivo existe y tiene el formato correcto
-        if (!file || !file.buffer) {
-            throw new Error('Archivo inválido');
-        }
-
-        // Convertir el buffer de multer a un Blob
-        const blob = new Blob([file.buffer], { type: file.mimetype });
-        
-        // Generar nombre único para el archivo
-        const fileExt = file.originalname.split('.').pop();
-        const fileName = `${uuidv4()}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        console.log("Intentando subir archivo a Supabase:", filePath);
-
-        // Subir a Supabase Storage
+        const fileName = `${Date.now()}_${file.originalname}`;
         const { data, error } = await supabase.storage
             .from('projects')
-            .upload(filePath, blob, {
+            .upload(`images/${fileName}`, file.buffer, {
                 contentType: file.mimetype,
                 cacheControl: '3600'
             });
 
-        if (error) {
-            console.error('Error en Supabase Storage:', error);
-            throw error;
-        }
+        if (error) throw error;
 
-        console.log("Archivo subido exitosamente:", data);
-
-        // Obtener la URL pública
-        const { data: publicUrlData } = supabase.storage
+        // Obtener la URL pública de la imagen
+        const { data: { publicUrl } } = supabase.storage
             .from('projects')
-            .getPublicUrl(filePath);
+            .getPublicUrl(`images/${fileName}`);
 
-        console.log("URL pública generada:", publicUrlData.publicUrl);
-
-        return publicUrlData.publicUrl;
+        return publicUrl;
     } catch (error) {
-        console.error('Error detallado en uploadImage:', error);
+        console.error('Error al subir imagen:', error);
         throw error;
     }
 };
 
 const fetchAllProjects = async () => {
-    const { data, error } = await supabase.from("projects").select("*");
-    if (error) throw new Error("Error fetching projects");
+    const { data, error } = await supabase
+        .from('projects')
+        .select('*');
+    
+    if (error) throw error;
     return data;
 };
 
 const fetchProjectById = async (id) => {
     const { data, error } = await supabase
-        .from("projects")
-        .select("*")
-        .eq("id", id)
+        .from('projects')
+        .select('*')
+        .eq('id', id)
         .single();
-    if (error) throw new Error("Error fetching project");
+    
+    if (error) throw error;
     return data;
 };
 
@@ -84,37 +65,36 @@ const createNewProject = async (name, description, location, size, intention, cl
                 description,
                 location,
                 size: parseInt(size),
-                intention,
+                intention: intention.toLowerCase(),
                 client,
                 images: imageUrls
             }])
             .select();
 
         if (error) {
-            console.error('Error en Supabase Database:', error);
+            console.error('Error en Supabase:', error);
             throw error;
         }
 
-        console.log("Proyecto creado exitosamente:", data);
         return data;
     } catch (error) {
-        console.error('Error detallado en createNewProject:', error);
+        console.error('Error en createNewProject:', error);
         throw error;
     }
 };
 
 const removeProject = async (id) => {
-    const { data, error } = await supabase
-        .from("projects")
+    const { error } = await supabase
+        .from('projects')
         .delete()
-        .eq("id", id);
-    if (error) throw new Error("Error deleting project");
-    return data;
+        .eq('id', id);
+    
+    if (error) throw error;
 };
 
 module.exports = {
+    createNewProject,
     fetchAllProjects,
     fetchProjectById,
-    createNewProject,
-    removeProject,
+    removeProject
 };

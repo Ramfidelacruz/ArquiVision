@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 function ManageProyects() {
     const [projects, setProjects] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         fetch("http://localhost:8080/projects", {
@@ -14,13 +15,30 @@ function ManageProyects() {
                 "Content-Type": "application/json",
             },
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`Error de servidor: ${response.status}`);
+                }
+                return response.json();
+            })
             .then((data) => {
-                console.log(data); // Aquí tendrás la lista de proyectos
-                setProjects(data);
+                // Verificar que data sea un array antes de asignarlo
+                if (Array.isArray(data)) {
+                    setProjects(data);
+                } else if (data.error) {
+                    // Si hay un mensaje de error en la respuesta
+                    setError(`Error del servidor: ${data.error}`);
+                    setProjects([]);
+                } else {
+                    // Si data no es un array y no contiene error, inicializar como array vacío
+                    console.warn("La respuesta no es un array:", data);
+                    setProjects([]);
+                }
             })
             .catch((error) => {
                 console.error("Error fetching projects:", error);
+                setError(`Error al cargar proyectos: ${error.message}`);
+                setProjects([]);
             });
     }, []);
 
@@ -41,9 +59,31 @@ function ManageProyects() {
         }
     };
 
-    const filteredProjects = projects.filter((project) =>
-        project.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const moveProjectUp = (index) => {
+        if (index > 0) {
+            const newProjects = [...projects];
+            const temp = newProjects[index - 1];
+            newProjects[index - 1] = newProjects[index];
+            newProjects[index] = temp;
+            setProjects(newProjects);
+        }
+    };
+
+    const moveProjectDown = (index) => {
+        if (index < projects.length - 1) {
+            const newProjects = [...projects];
+            const temp = newProjects[index + 1];
+            newProjects[index + 1] = newProjects[index];
+            newProjects[index] = temp;
+            setProjects(newProjects);
+        }
+    };
+
+    // Asegúrate de que projects es un array antes de filtrar
+    const filteredProjects = Array.isArray(projects) 
+        ? projects.filter((project) =>
+            project.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+        : [];
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
@@ -51,6 +91,12 @@ function ManageProyects() {
 
             <div className="flex flex-col min-h-screen bg-muted/40">
                 <main className="flex-1 p-4 md:p-6">
+                    {/* Mostrar mensaje de error si existe */}
+                    {error && (
+                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                            {error}
+                        </div>
+                    )}
                     <div className="px-12 mb-6 flex justify-between items-center">
                         <div className="relative w-full max-w-md">
                             <input
@@ -101,7 +147,7 @@ function ManageProyects() {
                                             </tr>
                                         </thead>
                                         <tbody className="[&amp;_tr:last-child]:border-0">
-                                            {filteredProjects.map((project) => (
+                                            {filteredProjects.map((project, index) => (
                                                 <tr
                                                     key={project.id}
                                                     className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
@@ -117,6 +163,18 @@ function ManageProyects() {
                                                     </td>
                                                     <td className="p-4 align-middle [&amp;:has([role=checkbox])]:pr-0">
                                                         <div className="flex items-center gap-2">
+                                                            <button
+                                                                onClick={() => moveProjectUp(index)}
+                                                                className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                                                            >
+                                                                Mover Arriba
+                                                            </button>
+                                                            <button
+                                                                onClick={() => moveProjectDown(index)}
+                                                                className="bg-blue-500 text-white px-2 py-1 rounded mr-2"
+                                                            >
+                                                                Mover Abajo
+                                                            </button>
                                                             <Link
                                                                 to={`/admin/manage/proyectos/edit/${project.id}`}
                                                                 className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10"
